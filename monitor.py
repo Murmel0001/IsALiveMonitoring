@@ -1,30 +1,24 @@
 import time
 import requests
-import os
 
 # =========================
-# ENV CONFIG
+# KONFIGURATION
 # =========================
 
-URLS_ENV = os.getenv("URLS", "")
-URLS = [u.strip() for u in URLS_ENV.split(",") if u.strip()]
+# URLs zum Überwachen (mehrere mit Komma trennen)
+URLS = [
+    "https://test.luxos-vt.de"
+]
 
-INTERVAL = int(os.getenv("INTERVAL", "30"))
+# Intervall in Sekunden
+INTERVAL = 60
 
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-
-if not URLS:
-    raise RuntimeError("ENV URLS ist leer! Mindestens eine URL angeben.")
-
-if not TELEGRAM_BOT_TOKEN:
-    raise RuntimeError("ENV TELEGRAM_BOT_TOKEN fehlt!")
-
-if not TELEGRAM_CHAT_ID:
-    raise RuntimeError("ENV TELEGRAM_CHAT_ID fehlt!")
+# Telegram Bot Config
+TELEGRAM_BOT_TOKEN = "8369846397:AAG-Lfo3cBHp6GjB5Voa-PJNPlQa6VWgH6k"
+TELEGRAM_CHAT_ID = "-5281025997"  # Gruppen-ID oder Chat-ID
 
 # =========================
-# MONITORING LOGIC
+# MONITORING
 # =========================
 
 last_status = {}
@@ -37,7 +31,10 @@ def send_telegram_message(message):
         "parse_mode": "Markdown",
         "disable_web_page_preview": True
     }
-    requests.post(url, json=payload, timeout=5)
+    try:
+        requests.post(url, json=payload, timeout=5)
+    except requests.exceptions.RequestException as e:
+        print(f"[ERROR] Telegram Nachricht konnte nicht gesendet werden: {e}", flush=True)
 
 def check_url(url):
     try:
@@ -65,6 +62,10 @@ def check_url(url):
 
     last_status[url] = reachable
 
+
+# =========================
+# START MONITORING
+# =========================
 
 print("🚀 Starte URL-Monitoring", flush=True)
 print(f"⏱️  Intervall: {INTERVAL}s", flush=True)
