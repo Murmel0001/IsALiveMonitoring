@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  monitor:
+    build: .
+    restart: unless-stopped
+    environment:
+      URLS: "https://test.luxos-vt.de,https://api-test.luxos-vt.de/health"
+      INTERVAL: 30
+      TELEGRAM_BOT_TOKEN: xxx
+      TELEGRAM_CHAT_ID: -1001234567890
