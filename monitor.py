@@ -68,12 +68,12 @@ def check_url(url):
                     break
                 else:
                     failures += 1
-                    print(f"[{now()}] [WARNING] failures: {failures} {url}", flush=True)
+                    print(f"[{now()}] [WARNING] failures: {failures}/7 {url}", flush=True)
                     status_text = f"HTTP {r.status_code}"
             except requests.exceptions.RequestException:
                 failures += 1
                 status_text = "nicht erreichbar"
-                print(f"[{now()}] [WARNING] failure: {failures} {url}", flush=True)
+                print(f"[{now()}] [WARNING] failure: {failures}/7 {url}", flush=True)
 
             time.sleep(1.5)
 
