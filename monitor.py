@@ -62,7 +62,7 @@ def check_url(url):
         failures = 0
         status_text = "nicht erreichbar"
 
-        for _ in range(5):
+        for _ in range(7):
             try:
                 r = requests.get(url, timeout=5)
                 if r.status_code in OK_STATUS_CODES:
@@ -71,14 +71,16 @@ def check_url(url):
                     break
                 else:
                     failures += 1
+                    print(f"[{now()}] [WARNING] failures: {failures} {url}", flush=True)
                     status_text = f"HTTP {r.status_code}"
             except requests.exceptions.RequestException:
                 failures += 1
-                print(f"[{now()}] [WARNING] failures: {failures} {url}", flush=True)
+                status_text = "nicht erreichbar"
+                print(f"[{now()}] [WARNING] failure: {failures} {url}", flush=True)
 
-            time.sleep(0.5)
+            time.sleep(1.5)
 
-        reachable = failures < 5
+        reachable = failures < 7
 
     previous = last_status.get(url)
 
