@@ -130,5 +130,4 @@ print("-" * 40, flush=True)
 while True:
     for url in URLS:
         check_url(url)
-    print("-" * 40, flush=True)
     time.sleep(INTERVAL)
