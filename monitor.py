@@ -1,5 +1,6 @@
 import time
 import requests
+from datetime import datetime
 
 # =========================
 # KONFIGURATION
@@ -39,7 +40,6 @@ def send_telegram_message(message):
     except requests.exceptions.RequestException as e:
         print(f"[ERROR] Telegram Nachricht konnte nicht gesendet werden: {e}", flush=True)
 
-
 def check_url(url):
     # 1️⃣ Erster Check
     try:
@@ -52,7 +52,10 @@ def check_url(url):
     except requests.exceptions.RequestException:
         # 2️⃣ Nur jetzt Internet prüfen
         if not has_internet():
-            print("[INFO] Kein Internet – überspringe Prüfung", flush=True)
+            print(f"[{now()}] [INFO] Kein Internet – überspringe Prüfung", flush=True)
+            send_telegram_message(
+                f"🌐 *Internet DOWN*\nZeit: {now()}"
+            )
             return
 
         # 3️⃣ Retry-Checks
@@ -71,6 +74,7 @@ def check_url(url):
                     status_text = f"HTTP {r.status_code}"
             except requests.exceptions.RequestException:
                 failures += 1
+                print(f"[{now()}] [WARNING] failures: {failures} {url}", flush=True)
 
             time.sleep(0.5)
 
@@ -80,28 +84,37 @@ def check_url(url):
 
     # 4️⃣ Statuswechsel + Alert
     if reachable:
-        print(f"[OK]   {url} ({status_text})", flush=True)
+        print(f"[{now()}] [OK]   {url} ({status_text})", flush=True)
         if previous is False:
             send_telegram_message(
-                f"✅ *Wieder erreichbar*\n{url}\nStatus: {status_text}"
+                f"✅ *Wieder erreichbar*\n"
+                f"{url}\n"
+                f"Status: {status_text}\n"
+                f"Zeit: {now()}"
             )
     else:
-        print(f"[DOWN] {url} {status_text}", flush=True)
+        print(f"[{now()}] [DOWN] {url} {status_text}", flush=True)
         if previous is not False:
             send_telegram_message(
-                f"🚨 *Server DOWN*\n{url}\nStatus: {status_text}"
+                f"🚨 *Server DOWN*\n"
+                f"{url}\n"
+                f"Status: {status_text}\n"
+                f"Zeit: {now()}"
             )
 
     last_status[url] = reachable
 
 
+
 def has_internet():
     try:
-        requests.get("https://www.google.com", timeout=3)
+        requests.get("https://www.google.com", timeout=5)
         return True
     except requests.exceptions.RequestException:
         return False
-
+    
+def now():
+    return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
 
 # =========================
 # START MONITORING
