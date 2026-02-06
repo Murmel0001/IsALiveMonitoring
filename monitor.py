@@ -53,9 +53,6 @@ def check_url(url):
         # 2️⃣ Nur jetzt Internet prüfen
         if not has_internet():
             print(f"[{now()}] [INFO] Kein Internet – überspringe Prüfung", flush=True)
-            send_telegram_message(
-                f"🌐 *Internet DOWN*\nZeit: {now()}"
-            )
             return
 
         # 3️⃣ Retry-Checks
