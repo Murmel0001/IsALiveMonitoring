@@ -1,6 +1,6 @@
 import time
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 
 # =========================
 # KONFIGURATION
@@ -114,7 +114,7 @@ def has_internet():
         return False
     
 def now():
-    return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+    return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
 # =========================
 # START MONITORING
